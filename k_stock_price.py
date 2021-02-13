@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 browser = webdriver.Chrome(
-    "C:/Users/Be Irreplaceable/Desktop/RPA/3_web/chromedriver.exe")
+    "C:/Users/Be Irreplaceable/Desktop/forGitHub/chromedriver.exe")
 browser.get("http://naver.com")
 emt = browser.find_element_by_id("query")
 
