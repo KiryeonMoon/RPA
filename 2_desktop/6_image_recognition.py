@@ -62,13 +62,15 @@ def find_target(img_file, timeout):
     target = None
     while target is None:
         target = pyautogui.locateOnScreen(img_file)
+        print("찾기 실패")
         end = time.time()  # 종료시간
         if end - start > timeout:  # 지정한 10초를 초과하면
             break
     return target
 
 
-def my_click(img_file, timeout=10):
+def my_click(img_file, Timeout):
+    # find_target() 함수 = 해당 이미지파일의 위치정보(left,top,width,heigt)를 반환해줌
     target = find_target(img_file, timeout)
     if target:
         pyautogui.click(target)
