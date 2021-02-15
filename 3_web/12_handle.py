@@ -1,5 +1,5 @@
 # 운영체제가 무언가를 식별하기 위한 key값 개념
-# 브라우저가 뜰 때마다 브라우저 창별로 hadle 번호를 부여함
+# 브라우저가 뜰 때마다 브라우저 창별로 handle 번호를 부여함
 import time
 from selenium import webdriver
 
