@@ -129,6 +129,13 @@ def currentWeather():
 
     return [nowTemp, nowWind, nowRain]
 
+# Today weather
+
+
+def TodayWeather():
+    for i ~~~
+    //*[@id = "dfs-panel"]/div[2]/div[3]/dl[i]/dd[1]/img
+
 
 # Tomorrow weather
 def tomorrowWeather():
