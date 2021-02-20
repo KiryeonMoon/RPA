@@ -1,48 +1,15 @@
 '''
-Created By Kiryeon
+@Created By Kiryeon
 
 Gwangyang Maintenance Technology Department
 Mechanical Technology Section
+
+Last Edit : 2021.2.20
 '''
 
-# # 패키지 설치여부 확인 및 설치 함수
-# import subprocess
-# import sys
-
-# print("Check if package is installed")
-# def install_pkg(package):
-#     try:
-#         __import__(package)
-#         print(" ", package, ": already installed")
-#     except ImportError:
-#         subprocess.call([sys.executable, "-m", "pip", "install", "--trusted-host=files.pythonhosted.org", "--trusted-host=pypi.org", package])
-#         print("", package, " successly installed")
-
-# # 패키지 설치
-# print("Install Packages")
-# install_pkg("time")
-# install_pkg("selenium")
-
-# # chrome webdriver 설치여부 확인
-# print("Check if webdriver is installed")
-# import os
-
-# check = os.path.isfile("C/Users/POSCOUSER/chromedriver.exe")
-# if not check:
-#     import requests
-#     import zipfile
-#     url = "https://chromedriver.storage.googleapis.com/index.html?path=88.0.4324.96/chromedriver_win32.zip"
-#     r = requests.get(url, allow_redirects=True, verify=False)
-#     open("C/Users/POSCOUSER/chromedriver_win32.zip", "wb").write(r.content)
-#     zipfile.ZipFile("C/Users/POSCOUSER/chromedriver_win32.zip").extractall("C:\\Users\POSCOUSER\\")
-#     print(" ", "chromedriver installed")
-# else:
-#     print(" ", "already installed")
-
-
 # 날씨 앱 자동 추출
-import sys
 import os
+import sys
 import time
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
@@ -51,23 +18,21 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-
-# 웹브라우저 창 안 뜨게
+# No Web browser window
 invisible = webdriver.ChromeOptions()
 invisible.add_argument("headless")
 
-# Chrome webdriver 호출
-# webdriver 가상경로 추가
-if getattr(sys, "frozen", False):
+
+# Run chorme webdriver
+if getattr(sys, 'frozen', False):
     chromedriver_path = os.path.join(sys._MEIPASS, "chromedriver.exe")
     driver = webdriver.Chrome(chromedriver_path, options=invisible)
 else:
-    driver = webdriver.Chrome(
-        "C:/Users/Be Irreplaceable/Desktop/forGitHub/chromedriver.exe", options=invisible)
-
+    driver = webdriver.Chrome("chromedriver.exe", options=invisible)
 driver.get("https://www.weather.go.kr/weather/forecast/timeseries.jsp")
 
-# 지역 설정 #########d
+
+######### 날씨 조회지역 설정 #########
 driver.find_element(
     By.XPATH, '//*[@id="content_weather"]/div[2]/dl/dd/a[1]/img').click()  # 동네찾기
 time.sleep(0.5)
@@ -82,7 +47,7 @@ time.sleep(0.5)
 driver.find_element(
     By.XPATH, '//*[@id="layor_area"]/form/fieldset/p/a[1]/img').click()  # 관심지역 등록
 
-# alert창 처리
+# alert창
 try:
     result = driver.switch_to_alert()
     result.accept()
@@ -97,19 +62,35 @@ driver.find_element(
 time.sleep(3)
 driver.find_element(
     By.XPATH, '//*[@id="content_weather"]/div[1]/dl/dd/form/input').click()  # 변경하기
-###########################
+#####################################
+
 
 # Element check
+print("Element check")
 
 
-def isElementPresent(address):
+def isElementPresent(address):  # Element check
     try:
         driver.find_element(By.XPATH, address)
     except NoSuchElementException:
         return False
     return True
 
+
+# List check
+print("List check")
+
+
+def isEmpty(lst):
+    try:
+        lst[0]
+    except IndexError:
+        return True
+    return False
+
+
 # Current Weather
+print("Current Weather")
 
 
 def currentWeather():
@@ -126,28 +107,53 @@ def currentWeather():
         nowWind = driver.find_element(
             By.XPATH, '//*[@id="dfs-panel"]/div[2]/div[2]/dl/dd[2]').text  # 현재 풍속
         nowRain = "비/눈 없음"
-
     return [nowTemp, nowWind, nowRain]
 
+
 # Today weather
+print("Today Waether")
 
 
 def TodayWeather():
-    for i ~~~
-    //*[@id = "dfs-panel"]/div[2]/div[3]/dl[i]/dd[1]/img
+    for i in range(1, 4):
+        tdTime = driver.find_element(
+            By.XPATH, '//*[@id="dfs-panel"]/div[2]/div[3]/dl[{0}]/dt'.format(i))
+        tdWeather = driver.find_element(
+            By.XPATH, '//*[@id = "dfs-panel"]/div[2]/div[3]/dl[{0}]/dd[1]/img'.format(i))
+        tdTime_txt = tdTime.text
+        tdWeather_att = tdWeather.get_attribute("alt")
+
+        # No update after 17:00 pm
+        message = []
+        if int(tdTime_txt[0:2]) > 17:
+            break
+        else:
+            message[i-1] = "{0} : {1}\n\n".format(tdTime_txt, tdWeather_att)
+
+    string = ""
+    if isEmpty(message):  # After 17:00
+        string = "그만 일하고 퇴근하세요 휴먼\n\n"
+        return string
+    else:  # Before 17:00
+        for i, j in enumerate(message):
+            string += "{0}\n".format(message[i])
+        return string
 
 
 # Tomorrow weather
+print("Tomorrow Waether")
+
+
 def tomorrowWeather():
     for i in range(1, 8):
         tmrWeather = driver.find_element(
             By.XPATH, '//*[@id="dfs-panel"]/div[4]/table/tbody/tr[3]/td[{0}]'.format(i))
         tmrWeather_att = tmrWeather.get_attribute("title")
         if tmrWeather_att == "흐림" or tmrWeather_att == "비/눈" or tmrWeather_att == "눈":
-            string = "내일 날씨 최소 흐리거나 더 안 좋음. 드론 날기 힘듦\n\n"
+            string = "내일 날씨 최소 흐리거나 더 안 좋음\n\n"
             break
         else:
-            string = "내일 날씨 평이 혹은 준수할 것으로 기대됨. 추이를 지켜봐야 할 듯\n\n"
+            string = "내일 날씨 평이 혹은 준수할 것으로 예상\n\n"
     return string
 
 
@@ -165,14 +171,16 @@ def printWeather():
     report = open("C:/Users/Be Irreplaceable/Desktop/Report.txt", "w")
     report.write(
         "####### 최근 업데이트 : {0}시 {1}분 #########\n\n".format(hour, minute))
-    report.write("현재기온 : {0}\n현재풍속 : {1}\n강수상태 : {2}\n\n\n############ 내일 날씨 예상 ############\n\n".format(
+    report.write("현재기온 : {0}\n현재풍속 : {1}\n강수상태 : {2}\n\n\n########### 시간별 날씨 예상 ############\n\n".format(
         currentWeather()[0], currentWeather()[1], currentWeather()[2]))
+    report.write(TodayWeather())
+    report.write("\n############ 내일 날씨 예상 ############\n\n")
     report.write(tomorrowWeather())
-    report.write("###################################")
+    report.write("\n###################################\n\n")
     report.close()
 
 
-# Run Program
+    # Run Program
 print("Run Program")
 while True:
     printWeather()
