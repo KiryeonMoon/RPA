@@ -4,26 +4,26 @@
 Gwangyang Maintenance Technology Department
 Mechanical Technology Section
 
-Last Edit : 2021.2.20
+Last Edit : 2021.2.21
 '''
 
 # 날씨 앱 자동 추출
 import os
 import sys
-import time
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-# No Web browser window
+# 웹브라우저 창 안 뜨게
 invisible = webdriver.ChromeOptions()
 invisible.add_argument("headless")
 
-
 # Run chorme webdriver
+# Imply chromedriver in exe file
 if getattr(sys, 'frozen', False):
     chromedriver_path = os.path.join(sys._MEIPASS, "chromedriver.exe")
     driver = webdriver.Chrome(chromedriver_path, options=invisible)
@@ -32,7 +32,7 @@ else:
 driver.get("https://www.weather.go.kr/weather/forecast/timeseries.jsp")
 
 
-######### 날씨 조회지역 설정 #########
+#### 지역 설정 ####
 driver.find_element(
     By.XPATH, '//*[@id="content_weather"]/div[2]/dl/dd/a[1]/img').click()  # 동네찾기
 time.sleep(0.5)
@@ -47,7 +47,7 @@ time.sleep(0.5)
 driver.find_element(
     By.XPATH, '//*[@id="layor_area"]/form/fieldset/p/a[1]/img').click()  # 관심지역 등록
 
-# alert창
+# alert창 처리
 try:
     result = driver.switch_to_alert()
     result.accept()
@@ -62,14 +62,14 @@ driver.find_element(
 time.sleep(3)
 driver.find_element(
     By.XPATH, '//*[@id="content_weather"]/div[1]/dl/dd/form/input').click()  # 변경하기
-#####################################
+###################
 
 
 # Element check
 print("Element check")
 
 
-def isElementPresent(address):  # Element check
+def isElementPresent(address):
     try:
         driver.find_element(By.XPATH, address)
     except NoSuchElementException:
@@ -115,6 +115,7 @@ print("Today Waether")
 
 
 def TodayWeather():
+    message = []
     for i in range(1, 4):
         tdTime = driver.find_element(
             By.XPATH, '//*[@id="dfs-panel"]/div[2]/div[3]/dl[{0}]/dt'.format(i))
@@ -122,14 +123,15 @@ def TodayWeather():
             By.XPATH, '//*[@id = "dfs-panel"]/div[2]/div[3]/dl[{0}]/dd[1]/img'.format(i))
         tdTime_txt = tdTime.text
         tdWeather_att = tdWeather.get_attribute("alt")
+        # print(int(tdTime_txt[0:2]))
 
         # No update after 17:00 pm
-        message = []
         if int(tdTime_txt[0:2]) > 17:
             break
         else:
-            message[i-1] = "{0} : {1}\n\n".format(tdTime_txt, tdWeather_att)
+            message.append("{0} : {1}\n".format(tdTime_txt, tdWeather_att))
 
+    # Make message
     string = ""
     if isEmpty(message):  # After 17:00
         string = "그만 일하고 퇴근하세요 휴먼\n\n"
@@ -137,7 +139,8 @@ def TodayWeather():
     else:  # Before 17:00
         for i, j in enumerate(message):
             string += "{0}\n".format(message[i])
-        return string
+
+    return string
 
 
 # Tomorrow weather
@@ -180,9 +183,16 @@ def printWeather():
     report.close()
 
 
-    # Run Program
+# Run Program
 print("Run Program")
-while True:
-    printWeather()
-    print("반복수행중")
-    time.sleep(10)
+printWeather()
+
+# Terminate Program
+print("Terminate Program")
+driver.quit()
+
+# print("Run Program")
+# while True:
+#     printWeather()
+#     print("반복수행중")
+#     time.sleep(10)
