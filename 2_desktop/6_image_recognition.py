@@ -69,7 +69,7 @@ def find_target(img_file, timeout):
     return target
 
 
-def my_click(img_file, Timeout):
+def my_click(img_file, timeout):
     # find_target() 함수 = 해당 이미지파일의 위치정보(left,top,width,heigt)를 반환해줌
     target = find_target(img_file, timeout)
     if target:
